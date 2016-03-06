@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Data Visualization - Table</title>
+  </head>
+  <body>
+
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      // Define
+      var data = [
+        {month: 'january 2015', profit: 2000},
+        {month: 'february 2015', profit: 2200},
+        {month: 'march 2015', profit: 2400},
+        {month: 'april 2015', profit: 3000},
+        {month: 'june 2015', profit: 1000},
+      ];
+
+      // We need to start somewhere, a <body> is always available on a webpage.
+      var body = d3.select('body');
+
+      // We start by creating the static parts first.
+      var table = body.append('table');
+      var thead = table.append('thead');
+
+      thead.append('th').text('month');
+      thead.append('th').text('profit');
+
+      var tbody = table.append('tbody');
+
+      // Selections in D3 are always a collection of elements. Even a `d3.select('body')` would return an array: [body].
+
+      // We select all the rows of our table, but at this point there are none yet so the selection is empty.
+      // But imagine that we will update our data every minute, in that case we want to replace existing rows without manually removing and adding them.
+      var rows = tbody.selectAll('tr');
+
+      // We populate our existing selection with the data. Our selection now knows how much elements there should be.
+      rows = rows.data(data);
+
+      // We have no rows yet, so we need to create them first. For this we use enter, which limits the selection to "new" data.
+      rows = rows.enter();
+
+      // Same as before, we create a new row for each new data point.
+      rows = rows.append('tr');
+
+      // Our selection is aware about which data entry it is operating on. By passing a function we can access the data.
+      rows.append('td').text(function (d) {
+        return d.month;
+      });
+
+      rows.append('td').text(function (d) {
+        return '€' + d.profit;
+      });
+    </script>
+  </body>
+</html>

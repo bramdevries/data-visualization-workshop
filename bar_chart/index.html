@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Data Visualization - Bar chart</title>
+  </head>
+  <body>
+
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      // Define
+      var data = [
+        {month: 'january 2015', profit: 2000},
+        {month: 'february 2015', profit: 2200},
+        {month: 'march 2015', profit: 2400},
+        {month: 'april 2015', profit: 3000},
+        {month: 'june 2015', profit: 1000},
+      ];
+
+      var size = {
+        width: 500,
+        height: 500,
+      };
+
+      // We create a root svg on the body
+      var svg = d3.select('body').append('svg');
+
+      // With SVG's you explicitly have to set the size.
+      svg.attr('width', size.width).attr('height', size.height);
+
+      // A group is an empty shell, it is purely structural.
+      var chart = svg.append('g');
+
+      var maxProfit = d3.max(data, function (d) {
+        return d.profit;
+      });
+
+      var months = data.map(function (d) {
+        return d.month;
+      });
+
+      var yScale = d3.scale.linear().range([size.height, 0]).domain([0, maxProfit]);
+      var xScale = d3.scale.ordinal().rangeRoundBands([0, size.width], 0.2).domain(months);
+
+      chart.selectAll('rect')
+        .data(data).enter()
+        .append('rect')
+          .attr('width', xScale.rangeBand())
+          .attr('height', function (d) {
+            return size.height - yScale(d.profit);
+          })
+          .attr('x', function (d) {
+            return xScale(d.month);
+          })
+          .attr('y', function (d) {
+            return yScale(d.profit);
+          });
+    </script>
+  </body>
+</html>

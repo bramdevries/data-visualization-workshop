@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Data Visualization - Bar chart</title>
+    <style>
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: black;
+        shape-rendering: crispEdges;
+      }
+
+      .axis text {
+        font-family: sans-serif;
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      var translate = function (x, y) {
+        return 'translate(' + x + ', ' + y + ')';
+      }
+
+      // Define
+      var data = [
+        {month: 'january 2015', profit: 2000},
+        {month: 'february 2015', profit: 2200},
+        {month: 'march 2015', profit: 2400},
+        {month: 'april 2015', profit: 3000},
+        {month: 'june 2015', profit: 1000},
+      ];
+
+      // We add margins for each side of the graph
+      var margins = {
+        top: 50,
+        left: 50,
+        right: 50,
+        bottom: 50,
+      };
+
+      // Instead of the svg size, we define the graph size now.
+      var size = {
+        width: 700 - (margins.left + margins.right),
+        height: 700 - (margins.top + margins.bottom),
+      };
+
+      // We create a root svg on the body
+      var svg = d3.select('body').append('svg');
+
+      // With SVG's you explicitly have to set the size, we add our margins again here.
+      svg
+        .attr('width', size.width + (margins.left + margins.right))
+        .attr('height', size.height + (margins.top + margins.bottom));
+
+      // A group is an empty shell. Groups can be used to transform a collection of elements
+      var chart = svg.append('g').attr('transform', translate(margins.left, margins.top));
+      var xAxisContainer = svg.append('g').attr('class', 'axis');
+      var yAxisContainer = svg.append('g').attr('class', 'axis');
+
+      var maxProfit = d3.max(data, function (d) {
+        return d.profit;
+      });
+
+      var months = data.map(function (d) {
+        return d.month;
+      });
+
+      var yScale = d3.scale.linear().range([size.height, 0]).domain([0, maxProfit]);
+      var xScale = d3.scale.ordinal().rangeRoundBands([0, size.width], 0.2).domain(months);
+
+      chart.selectAll('rect')
+        .data(data).enter()
+        .append('rect')
+          .attr('width', xScale.rangeBand())
+          .attr('height', function (d) {
+            return size.height - yScale(d.profit);
+          })
+          .attr('x', function (d) {
+            return xScale(d.month);
+          })
+          .attr('y', function (d) {
+            return yScale(d.profit);
+          });
+
+        // Create and axis using the xScale and orient it at the bottom
+        var xAxis = d3.svg.axis().scale(xScale).orient('bottom');
+
+        // Create and axis using the yScale and orient it at the left
+        var yAxis = d3.svg.axis()
+          .scale(yScale)
+          .orient('left')
+          .ticks(3) // How many "ticks" we want to display in the axis
+          .tickFormat(function (d) { // Add some extra formatting
+            return '$' + d;
+          });
+
+        // We translate the axis to it's proper position and execute the xAxis function on it.
+        xAxisContainer.attr('transform', translate(margins.left, size.height + margins.top + 20)).call(xAxis);
+        yAxisContainer.attr('transform', translate(margins.left, margins.top)).call(yAxis);
+    </script>
+  </body>
+</html>
